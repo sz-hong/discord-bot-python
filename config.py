@@ -10,6 +10,9 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 
+# YouTube Cookie 設定 (從環境變數讀取)
+YOUTUBE_COOKIE = os.getenv("YOUTUBE_COOKIE")
+
 # yt-dlp 設定
 YTDL_OPTIONS = {
     'format': 'bestaudio[ext=webm]/bestaudio/best',
@@ -28,6 +31,31 @@ YTDL_OPTIONS = {
         }
     },
 }
+
+# 如果有設定 cookie，加入 yt-dlp 設定
+if YOUTUBE_COOKIE:
+    import tempfile
+    import atexit
+
+    # 將 \n 字串轉換為實際換行符
+    cookie_content = YOUTUBE_COOKIE.replace('\\n', '\n').replace('\\t', '\t')
+
+    # 建立暫時的 cookie 檔案
+    cookie_file = tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False)
+    cookie_file.write(cookie_content)
+    cookie_file.close()
+
+    YTDL_OPTIONS['cookiefile'] = cookie_file.name
+    print(f"已載入 YouTube Cookie")
+
+    # 程式結束時刪除暫時檔案
+    def cleanup_cookie():
+        import os
+        try:
+            os.unlink(cookie_file.name)
+        except:
+            pass
+    atexit.register(cleanup_cookie)
 
 # FFmpeg 設定
 FFMPEG_OPTIONS = {
