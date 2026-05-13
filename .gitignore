@@ -36,8 +36,9 @@ env/
 *.swo
 *~
 
-# Data files (server-specific settings)
-data/prompts.json
+# Data files (含使用者 token，絕對不能上傳)
+data/
+
 
 # Logs
 *.log
